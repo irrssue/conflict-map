@@ -1,12 +1,12 @@
 const FILTERS = [
-  { key: "all", label: "ALL" },
-  { key: "airstrike", label: "AIRSTRIKE" },
-  { key: "missile_launch", label: "MISSILE" },
-  { key: "explosion", label: "EXPLOSION" },
-  { key: "ground_operation", label: "GROUND" },
-  { key: "diplomatic", label: "DIPLOMATIC" },
-  { key: "naval", label: "NAVAL" },
-  { key: "cyber", label: "CYBER" },
+  { key: "all", label: "ALL", icon: "◉" },
+  { key: "airstrike", label: "AIRSTRIKE", icon: "⚡" },
+  { key: "missile_launch", label: "MISSILE", icon: "🚀" },
+  { key: "explosion", label: "EXPLOSION", icon: "💥" },
+  { key: "ground_operation", label: "GROUND", icon: "⊕" },
+  { key: "diplomatic", label: "DIPLOMATIC", icon: "⚑" },
+  { key: "naval", label: "NAVAL", icon: "⚓" },
+  { key: "cyber", label: "CYBER", icon: "⟨/⟩" },
 ];
 
 const SEVERITY_DOT = {
@@ -16,10 +16,11 @@ const SEVERITY_DOT = {
   low: "#0066FF",
 };
 
-export default function NavBar({ activeFilter, onFilterChange, events, selectedEvent }) {
-  const recentEvents = [...events]
-    .sort((a, b) => new Date(b.published_at) - new Date(a.published_at))
-    .slice(0, 1)[0];
+export default function NavBar({ activeFilter, onFilterChange, events }) {
+  const getFilterCount = (key) => {
+    if (key === "all") return events.length;
+    return events.filter((e) => e.event_type === key).length;
+  };
 
   return (
     <nav
@@ -60,33 +61,50 @@ export default function NavBar({ activeFilter, onFilterChange, events, selectedE
 
       {/* Filters */}
       <div style={{ display: "flex", gap: "4px", overflowX: "auto", flexShrink: 1 }}>
-        {FILTERS.map((f) => (
-          <button
-            key={f.key}
-            onClick={() => onFilterChange(f.key)}
-            style={{
-              background: activeFilter === f.key ? "rgba(255,255,255,0.12)" : "transparent",
-              border: activeFilter === f.key ? "1px solid rgba(255,255,255,0.25)" : "1px solid transparent",
-              color: activeFilter === f.key ? "#fff" : "rgba(255,255,255,0.4)",
-              fontFamily: "monospace",
-              fontSize: "10px",
-              letterSpacing: "1px",
-              padding: "4px 10px",
-              borderRadius: "3px",
-              cursor: "pointer",
-              whiteSpace: "nowrap",
-              transition: "all 0.15s",
-            }}
-          >
-            {f.label}
-          </button>
-        ))}
+        {FILTERS.map((f) => {
+          const count = getFilterCount(f.key);
+          const isActive = activeFilter === f.key;
+          return (
+            <button
+              key={f.key}
+              onClick={() => onFilterChange(f.key)}
+              style={{
+                background: isActive ? "rgba(255,255,255,0.12)" : "transparent",
+                border: isActive ? "1px solid rgba(255,255,255,0.25)" : "1px solid transparent",
+                color: isActive ? "#fff" : "rgba(255,255,255,0.4)",
+                fontFamily: "monospace",
+                fontSize: "10px",
+                letterSpacing: "1px",
+                padding: "4px 10px",
+                borderRadius: "3px",
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+                transition: "all 0.15s",
+                display: "flex",
+                alignItems: "center",
+                gap: "5px",
+              }}
+            >
+              <span style={{ fontSize: "11px" }}>{f.icon}</span>
+              {f.label}
+              <span
+                style={{
+                  fontSize: "9px",
+                  color: isActive ? "rgba(255,255,255,0.6)" : "rgba(255,255,255,0.25)",
+                  marginLeft: "2px",
+                }}
+              >
+                {count}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Divider */}
       <div style={{ width: "1px", height: "24px", background: "rgba(255,255,255,0.1)", flexShrink: 0 }} />
 
-      {/* Event count + latest */}
+      {/* Event count */}
       <div
         style={{
           fontFamily: "monospace",
@@ -112,7 +130,7 @@ export default function NavBar({ activeFilter, onFilterChange, events, selectedE
             key={severity}
             style={{ display: "flex", alignItems: "center", gap: "4px", fontFamily: "monospace", fontSize: "9px", color: "rgba(255,255,255,0.3)", letterSpacing: "0.5px" }}
           >
-            <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: color }} />
+            <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: color, boxShadow: `0 0 4px ${color}66` }} />
             {severity.toUpperCase()}
           </div>
         ))}

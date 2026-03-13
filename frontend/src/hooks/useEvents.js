@@ -1,15 +1,23 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import SAMPLE_EVENTS from "../data/events";
+
+const API_URL = "http://localhost:8000/api/events";
 
 export function useEvents(intervalMs = 30000) {
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState(SAMPLE_EVENTS);
 
   const fetchEvents = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/events");
-      setEvents(res.data);
-    } catch (err) {
-      console.error("Failed to fetch events:", err);
+      const res = await fetch(API_URL);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.length > 0) {
+          setEvents(data);
+          return;
+        }
+      }
+    } catch {
+      // Backend unavailable — keep using sample data
     }
   };
 

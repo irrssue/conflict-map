@@ -19,7 +19,6 @@ export default function App() {
         activeFilter={activeFilter}
         onFilterChange={setActiveFilter}
         events={events}
-        selectedEvent={selectedEvent}
       />
     </div>
   );
