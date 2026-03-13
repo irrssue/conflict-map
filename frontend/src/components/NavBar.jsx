@@ -60,7 +60,7 @@ export default function NavBar({ activeFilter, onFilterChange, events }) {
       <div style={{ width: "1px", height: "24px", background: "rgba(255,255,255,0.1)", flexShrink: 0 }} />
 
       {/* Filters */}
-      <div style={{ display: "flex", gap: "4px", overflowX: "auto", flexShrink: 1 }}>
+      <div style={{ display: "flex", gap: "4px", overflowX: "auto", flexShrink: 1, scrollbarWidth: "none", msOverflowStyle: "none" }}>
         {FILTERS.map((f) => {
           const count = getFilterCount(f.key);
           const isActive = activeFilter === f.key;

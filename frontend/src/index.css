@@ -25,6 +25,11 @@ html, body, #root {
   border-top-color: rgba(12, 12, 12, 0.95);
 }
 
+/* Hide navbar filter scrollbar */
+nav div::-webkit-scrollbar {
+  display: none;
+}
+
 /* Attribution */
 .maplibregl-ctrl-attrib {
   opacity: 0.3;
