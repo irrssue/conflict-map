@@ -9,7 +9,7 @@ export default function App() {
   const [selectedEvent, setSelectedEvent] = useState(null);
 
   return (
-    <div style={{ width: "100vw", height: "100vh", background: "#0a0a0a", overflow: "hidden" }}>
+    <div style={{ position: "fixed", inset: 0, background: "#0a0a0a" }}>
       <Map
         events={events}
         activeFilter={activeFilter}

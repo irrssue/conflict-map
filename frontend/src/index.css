@@ -11,20 +11,8 @@ html, body, #root {
   background: #0a0a0a;
 }
 
-/* Pulse animation for critical events */
-@keyframes pulse-ring {
-  0% {
-    transform: translate(-50%, -50%) scale(0.8);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(2.2);
-    opacity: 0;
-  }
-}
-
-/* Mapbox popup dark theme */
-.event-popup .mapboxgl-popup-content {
+/* Popup dark theme (MapLibre v5 class names) */
+.event-popup .maplibregl-popup-content {
   background: rgba(12, 12, 12, 0.95);
   color: #e0e0e0;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -33,22 +21,22 @@ html, body, #root {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
 }
 
-.event-popup .mapboxgl-popup-tip {
+.event-popup .maplibregl-popup-tip {
   border-top-color: rgba(12, 12, 12, 0.95);
 }
 
-/* Hide mapbox attribution on minimal layout */
-.mapboxgl-ctrl-attrib {
+/* Attribution */
+.maplibregl-ctrl-attrib {
   opacity: 0.3;
   font-size: 9px;
 }
 
-/* Mapbox navigation controls dark theme */
-.mapboxgl-ctrl-group {
+/* Navigation controls dark theme */
+.maplibregl-ctrl-group {
   background: rgba(10, 10, 10, 0.8) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
-.mapboxgl-ctrl-group button {
+.maplibregl-ctrl-group button {
   filter: invert(1);
 }
