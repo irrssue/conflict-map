@@ -1,9 +1,7 @@
 import { useEffect, useRef } from "react";
-import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
+import maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
 import ICONS from "../data/markerIcons";
-
-mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
 const SEVERITY_COLORS = {
   critical: "#FF0000",
@@ -119,12 +117,11 @@ export default function Map({ events, activeFilter, onEventSelect }) {
 
   useEffect(() => {
     if (map.current) return;
-    map.current = new mapboxgl.Map({
+    map.current = new maplibregl.Map({
       container: mapContainer.current,
-      style: "mapbox://styles/mapbox/dark-v11",
+      style: "https://tiles.openfreemap.org/styles/dark",
       center: [44, 32],
       zoom: 4.5,
-      projection: "mercator",
     });
   }, []);
 
@@ -149,7 +146,7 @@ export default function Map({ events, activeFilter, onEventSelect }) {
 
       const el = createMarkerElement(event);
 
-      const popup = new mapboxgl.Popup({
+      const popup = new maplibregl.Popup({
         offset: 20,
         closeButton: false,
         className: "event-popup",
@@ -190,7 +187,7 @@ export default function Map({ events, activeFilter, onEventSelect }) {
         </div>
       `);
 
-      const marker = new mapboxgl.Marker({ element: el, anchor: "center" })
+      const marker = new maplibregl.Marker({ element: el, anchor: "center" })
         .setLngLat([event.longitude, event.latitude])
         .setPopup(popup)
         .addTo(map.current);
