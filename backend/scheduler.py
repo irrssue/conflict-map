@@ -66,7 +66,7 @@ def start_scheduler():
     scheduler = BackgroundScheduler()
     # Run once after a short delay so the server can start accepting requests
     scheduler.add_job(run_pipeline, "date")
-    scheduler.add_job(run_pipeline, "interval", minutes=15)
+    scheduler.add_job(run_pipeline, "interval", hours=2)
     scheduler.start()
-    logger.info("Scheduler started — pipeline runs every 15 minutes.")
+    logger.info("Scheduler started — pipeline runs every 2 hours.")
     return scheduler
