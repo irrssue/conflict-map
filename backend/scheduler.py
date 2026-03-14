@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from fetcher import fetch_all_articles
-from extractor import extract_event
+from extractor import extract_events_batch, BATCH_SIZE
 from geocoder import geocode
 from database import SessionLocal
 from models import Event
@@ -19,41 +19,55 @@ def run_pipeline():
     try:
         articles = fetch_all_articles()
 
+        # Filter out duplicates and articles without URLs
+        new_articles = []
         for article in articles:
             url = article.get("url", "")
             if not url:
                 continue
-
-            # Skip duplicates
             existing = db.query(Event).filter_by(source_url=url).first()
             if existing:
                 continue
+            new_articles.append(article)
 
-            extracted = extract_event(article["title"], article["description"])
-            if not extracted:
-                continue
+        logger.info(f"{len(new_articles)} new articles to process in batches of {BATCH_SIZE}")
 
-            coords = geocode(extracted["location_name"])
-            if not coords:
-                logger.warning(f"Could not geocode: {extracted['location_name']}")
-                continue
+        # Process in batches
+        for i in range(0, len(new_articles), BATCH_SIZE):
+            batch = new_articles[i:i + BATCH_SIZE]
+            batch_tuples = [(a["title"], a.get("description", "")) for a in batch]
+            results = extract_events_batch(batch_tuples)
 
-            event = Event(
-                title=article["title"],
-                description=extracted["summary"],
-                event_type=extracted["event_type"],
-                severity=extracted["severity"],
-                location_name=extracted["location_name"],
-                latitude=coords[0],
-                longitude=coords[1],
-                source_url=url,
-                source_name=article["source"],
-                published_at=datetime.now(timezone.utc),
-            )
-            db.add(event)
-            new_count += 1
+            batch_count = 0
+            for article, extracted in zip(batch, results):
+                if not extracted:
+                    continue
 
-        db.commit()
+                coords = geocode(extracted["location_name"])
+                if not coords:
+                    logger.warning(f"Could not geocode: {extracted['location_name']}")
+                    continue
+
+                event = Event(
+                    title=article["title"],
+                    description=extracted["summary"],
+                    event_type=extracted["event_type"],
+                    severity=extracted["severity"],
+                    location_name=extracted["location_name"],
+                    latitude=coords[0],
+                    longitude=coords[1],
+                    source_url=article["url"],
+                    source_name=article["source"],
+                    published_at=datetime.now(timezone.utc),
+                )
+                db.add(event)
+                batch_count += 1
+
+            # Commit after each batch so events appear on frontend immediately
+            db.commit()
+            new_count += batch_count
+            logger.info(f"Batch {i // BATCH_SIZE + 1}: {batch_count} events added ({new_count} total)")
+
         logger.info(f"Pipeline complete — {new_count} new events added.")
     except Exception as e:
         db.rollback()
