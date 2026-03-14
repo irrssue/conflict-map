@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import SAMPLE_EVENTS from "../data/events";
 
-const API_URL = "http://localhost:8000/api/events";
+const API_URL = "/api/events";
 
 export function useEvents(intervalMs = 30000) {
   const [events, setEvents] = useState(SAMPLE_EVENTS);
