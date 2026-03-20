@@ -6,6 +6,10 @@ import os
 import logging
 import time
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 logger = logging.getLogger(__name__)
 
 # Gemini free tier: 15 RPM for gemini-2.0-flash
@@ -14,7 +18,10 @@ MAX_RETRIES = 3
 BACKOFF_BASE = 30  # seconds to wait on rate limit before retrying
 BATCH_SIZE = 10  # articles per Gemini call
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+if not api_key:
+    logger.error("No Gemini API key found. Set GEMINI_API_KEY in .env")
+genai.configure(api_key=api_key)
 client = genai.GenerativeModel("gemini-2.0-flash")
 
 SYSTEM_PROMPT = """You are a conflict intelligence analyst. Given a batch of news articles, extract structured event data for each. Respond ONLY with a valid JSON array, no markdown, no explanation.
